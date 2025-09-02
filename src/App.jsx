@@ -5,6 +5,8 @@ function App() {
 
   const [tareas, setTareas] = useState([])
   const [input, setInput] = useState("")
+  const [editandoId, setEditandoId] = useState(null)
+  const [nuevoTexto, setNuevoTexto] = useState("")
 
   const agregarTarea = () => {
     if (input.trim()) {
@@ -24,8 +26,15 @@ function App() {
 
   }
 
-  const editarTarea = (id, nuevoTexto) => {
-    tareas.map((tarea) => tarea.id === id ? {...tarea, text: nuevoTexto}: tarea)
+  const iniciarEdicion = (id, texto) => {
+    setEditandoId(id);
+    setNuevoTexto(texto);
+  }
+
+  const guardarEdicion = (id) => {
+    setTareas(tareas.map((tarea) => tarea.id === id ? { ...tarea, text: nuevoTexto } : tarea));
+    setEditandoId(null);
+    setNuevoTexto("");
   }
 
 
@@ -40,7 +49,19 @@ function App() {
           <button className='bg-blue-500 text-white px-4 py-2 rounded' onClick={agregarTarea} >Agregar Tarea</button>
         </div>
         <div className='space-y-2'>
-          {tareas.map((tarea) => (<ToDoItem key={tarea.id} tarea={tarea} toggleCompletado={toggleCompletado} eliminarTarea={eliminarTarea} editarTarea={editarTarea} />))}
+          {tareas.map((tarea) => (
+            <ToDoItem
+              key={tarea.id}
+              tarea={tarea}
+              toggleCompletado={toggleCompletado}
+              eliminarTarea={eliminarTarea}
+              editando={editandoId === tarea.id}
+              iniciarEdicion={() => iniciarEdicion(tarea.id, tarea.text)}
+              nuevoTexto={nuevoTexto}
+              setNuevoTexto={setNuevoTexto}
+              guardarEdicion={() => guardarEdicion(tarea.id)}
+            />
+          ))}
         </div>
       </div>
     </>
